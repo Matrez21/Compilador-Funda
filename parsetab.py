@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'programleftPLUSMINUSleftMULTIPLYDIVIDECOMA DIVIDE FUNCION ID IMPRIMIR LLAVDER LLAVIZQ LPAREN MINUS MULTIPLY NUMBER PLUS PTCOMA RETURN RPARENexpression : expression PLUS expression\n                  | expression MINUS expression\n                  | expression MULTIPLY expression\n                  | expression DIVIDE expressionexpression : NUMBERexpression : LPAREN expression RPARENprogram : function program\n               | statement program\n               | emptyfunction : FUNCION ID LPAREN parameters RPAREN blockparameters : parameters COMA ID\n                  | ID\n                  | emptyexpression : ID LPAREN arguments RPARENstatement : RETURN expression PTCOMAblock : LLAVIZQ statement_list LLAVDERstatement_list : statement\n                      | statement statement_liststatement : IMPRIMIR LPAREN expression RPAREN\n                 | IMPRIMIR LPAREN expression RPAREN PTCOMAarguments : expression\n                 | expression COMA argumentsempty :'
+_lr_signature = 'programleftPLUSMINUSleftMULTIPLYDIVIDECOMA DIVIDE EQUALS FLOAT FUNCION ID IMPRIMIR LLAVDER LLAVIZQ LPAREN MINUS MULTIPLY NUMBER PLUS PTCOMA RETURN RPAREN STRINGexpression : expression PLUS expression\n                  | expression MINUS expression\n                  | expression MULTIPLY expression\n                  | expression DIVIDE expressionexpression : NUMBERexpression : FLOATexpression : STRINGexpression : IDstatement : ID EQUALS expression PTCOMAstatement : IMPRIMIR LPAREN expression RPAREN PTCOMAprogram : statement program\n               | emptyempty :'
     
-_lr_action_items = {'FUNCION':([0,2,3,17,35,40,41,47,],[5,5,5,-15,-19,-20,-10,-16,]),'RETURN':([0,2,3,17,35,40,41,42,46,47,],[6,6,6,-15,-19,-20,-10,6,6,-16,]),'IMPRIMIR':([0,2,3,17,35,40,41,42,46,47,],[7,7,7,-15,-19,-20,-10,7,7,-16,]),'$end':([0,1,2,3,4,8,9,17,35,40,41,47,],[-23,0,-23,-23,-9,-7,-8,-15,-19,-20,-10,-16,]),'ID':([5,6,13,15,16,18,19,20,21,23,37,39,],[10,14,14,14,25,14,14,14,14,14,43,14,]),'NUMBER':([6,13,15,18,19,20,21,23,39,],[12,12,12,12,12,12,12,12,12,]),'LPAREN':([6,7,10,13,14,15,18,19,20,21,23,39,],[13,15,16,13,23,13,13,13,13,13,13,13,]),'PTCOMA':([11,12,28,29,30,31,32,35,38,],[17,-5,-1,-2,-3,-4,-6,40,-14,]),'PLUS':([11,12,22,24,28,29,30,31,32,34,38,],[18,-5,18,18,-1,-2,-3,-4,-6,18,-14,]),'MINUS':([11,12,22,24,28,29,30,31,32,34,38,],[19,-5,19,19,-1,-2,-3,-4,-6,19,-14,]),'MULTIPLY':([11,12,22,24,28,29,30,31,32,34,38,],[20,-5,20,20,20,20,-3,-4,-6,20,-14,]),'DIVIDE':([11,12,22,24,28,29,30,31,32,34,38,],[21,-5,21,21,21,21,-3,-4,-6,21,-14,]),'RPAREN':([12,16,22,24,25,26,27,28,29,30,31,32,33,34,38,43,44,],[-5,-23,32,35,-12,36,-13,-1,-2,-3,-4,-6,38,-21,-14,-11,-22,]),'COMA':([12,16,25,26,27,28,29,30,31,32,34,38,43,],[-5,-23,-12,37,-13,-1,-2,-3,-4,-6,39,-14,-11,]),'LLAVDER':([17,35,40,45,46,48,],[-15,-19,-20,47,-17,-18,]),'LLAVIZQ':([36,],[42,]),}
+_lr_action_items = {'ID':([0,2,7,8,15,16,17,18,19,25,],[4,4,9,9,-9,9,9,9,9,-10,]),'IMPRIMIR':([0,2,15,25,],[5,5,-9,-10,]),'$end':([0,1,2,3,6,15,25,],[-13,0,-13,-12,-11,-9,-10,]),'EQUALS':([4,],[7,]),'LPAREN':([5,],[8,]),'NUMBER':([7,8,16,17,18,19,],[11,11,11,11,11,11,]),'FLOAT':([7,8,16,17,18,19,],[12,12,12,12,12,12,]),'STRING':([7,8,16,17,18,19,],[13,13,13,13,13,13,]),'PTCOMA':([9,10,11,12,13,20,21,22,23,24,],[-8,15,-5,-6,-7,25,-1,-2,-3,-4,]),'PLUS':([9,10,11,12,13,14,21,22,23,24,],[-8,16,-5,-6,-7,16,-1,-2,-3,-4,]),'MINUS':([9,10,11,12,13,14,21,22,23,24,],[-8,17,-5,-6,-7,17,-1,-2,-3,-4,]),'MULTIPLY':([9,10,11,12,13,14,21,22,23,24,],[-8,18,-5,-6,-7,18,18,18,-3,-4,]),'DIVIDE':([9,10,11,12,13,14,21,22,23,24,],[-8,19,-5,-6,-7,19,19,19,-3,-4,]),'RPAREN':([9,11,12,13,14,21,22,23,24,],[-8,-5,-6,-7,20,-1,-2,-3,-4,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'program':([0,2,3,],[1,8,9,]),'function':([0,2,3,],[2,2,2,]),'statement':([0,2,3,42,46,],[3,3,3,46,46,]),'empty':([0,2,3,16,],[4,4,4,27,]),'expression':([6,13,15,18,19,20,21,23,39,],[11,22,24,28,29,30,31,34,34,]),'parameters':([16,],[26,]),'arguments':([23,39,],[33,44,]),'block':([36,],[41,]),'statement_list':([42,46,],[45,48,]),}
+_lr_goto_items = {'program':([0,2,],[1,6,]),'statement':([0,2,],[2,2,]),'empty':([0,2,],[3,3,]),'expression':([7,8,16,17,18,19,],[10,14,21,22,23,24,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -32,22 +32,12 @@ _lr_productions = [
   ('expression -> expression MULTIPLY expression','expression',3,'p_expression_binop','parser.py',16),
   ('expression -> expression DIVIDE expression','expression',3,'p_expression_binop','parser.py',17),
   ('expression -> NUMBER','expression',1,'p_expression_number','parser.py',28),
-  ('expression -> LPAREN expression RPAREN','expression',3,'p_expression_paren','parser.py',32),
-  ('program -> function program','program',2,'p_program','parser.py',37),
-  ('program -> statement program','program',2,'p_program','parser.py',38),
-  ('program -> empty','program',1,'p_program','parser.py',39),
-  ('function -> FUNCION ID LPAREN parameters RPAREN block','function',6,'p_function_definition','parser.py',47),
-  ('parameters -> parameters COMA ID','parameters',3,'p_parameters','parser.py',56),
-  ('parameters -> ID','parameters',1,'p_parameters','parser.py',57),
-  ('parameters -> empty','parameters',1,'p_parameters','parser.py',58),
-  ('expression -> ID LPAREN arguments RPAREN','expression',4,'p_function_call','parser.py',66),
-  ('statement -> RETURN expression PTCOMA','statement',3,'p_return_statement','parser.py',84),
-  ('block -> LLAVIZQ statement_list LLAVDER','block',3,'p_block','parser.py',89),
-  ('statement_list -> statement','statement_list',1,'p_statement_list','parser.py',93),
-  ('statement_list -> statement statement_list','statement_list',2,'p_statement_list','parser.py',94),
-  ('statement -> IMPRIMIR LPAREN expression RPAREN','statement',4,'p_imprimir_statement','parser.py',102),
-  ('statement -> IMPRIMIR LPAREN expression RPAREN PTCOMA','statement',5,'p_imprimir_statement','parser.py',103),
-  ('arguments -> expression','arguments',1,'p_arguments','parser.py',108),
-  ('arguments -> expression COMA arguments','arguments',3,'p_arguments','parser.py',109),
-  ('empty -> <empty>','empty',0,'p_empty','parser.py',117),
+  ('expression -> FLOAT','expression',1,'p_expression_float','parser.py',32),
+  ('expression -> STRING','expression',1,'p_expression_string','parser.py',36),
+  ('expression -> ID','expression',1,'p_expression_variable','parser.py',40),
+  ('statement -> ID EQUALS expression PTCOMA','statement',4,'p_statement_assign','parser.py',44),
+  ('statement -> IMPRIMIR LPAREN expression RPAREN PTCOMA','statement',5,'p_statement_imprimir','parser.py',50),
+  ('program -> statement program','program',2,'p_program','parser.py',55),
+  ('program -> empty','program',1,'p_program','parser.py',56),
+  ('empty -> <empty>','empty',0,'p_empty','parser.py',64),
 ]

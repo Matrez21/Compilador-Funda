@@ -9,9 +9,8 @@ reserved = {
 
 # Lista de tokens
 tokens = [
-    'NUMBER', 'PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE', 
-    'LPAREN', 'RPAREN', 'ID', 'COMA', 'PTCOMA', 
-    'LLAVIZQ', 'LLAVDER'
+    'NUMBER', 'FLOAT', 'STRING', 'PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE', 
+    'LPAREN', 'RPAREN', 'ID', 'COMA', 'PTCOMA', 'LLAVIZQ', 'LLAVDER', 'EQUALS'
 ] + list(reserved.values())
 
 # Reglas de expresiones regulares para tokens simples
@@ -25,6 +24,7 @@ t_COMA = r','
 t_PTCOMA = r';'
 t_LLAVIZQ = r'\{'
 t_LLAVDER = r'\}'
+t_EQUALS = r'='
 
 # Regla para identificadores y palabras reservadas
 def t_ID(t):
@@ -32,10 +32,22 @@ def t_ID(t):
     t.type = reserved.get(t.value, 'ID')  # Verifica si es una palabra reservada
     return t
 
-# Regla para números
+# Regla para números flotantes
+def t_FLOAT(t):
+    r'\d+\.\d+'
+    t.value = float(t.value)
+    return t
+
+# Regla para números enteros
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
+    return t
+
+# Regla para cadenas de texto
+def t_STRING(t):
+    r'\".*?\"'
+    t.value = t.value[1:-1]  # Remover comillas
     return t
 
 # Ignorar espacios

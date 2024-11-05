@@ -4,9 +4,9 @@ from parser import parser
 def procesar_entrada(data):
     # Ejecutar el lexer y el parser para la entrada proporcionada
     lexer.input(data)
-    print("Tokens:")
-    for tok in lexer:
-        print(tok)
+    #print("Tokens:")
+    #for tok in lexer:
+    #    print(tok)
     result = parser.parse(data)
     return result
 
