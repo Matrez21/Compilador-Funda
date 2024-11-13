@@ -5,12 +5,17 @@ reserved = {
     'funcion': 'FUNCION',
     'return': 'RETURN',
     'imprimir': 'IMPRIMIR',
+    'if': 'IF',
+    'else': 'ELSE',
+    'while': 'WHILE',
+    'for': 'FOR'
 }
 
 # Lista de tokens
 tokens = [
-    'NUMBER', 'FLOAT', 'STRING', 'PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE', 
-    'LPAREN', 'RPAREN', 'ID', 'COMA', 'PTCOMA', 'LLAVIZQ', 'LLAVDER', 'EQUALS'
+    'NUMBER', 'FLOAT', 'STRING', 'PLUS', 'MINUS', 'MULTIPLY', 'DIVIDE',
+    'LPAREN', 'RPAREN', 'ID', 'COMA', 'PTCOMA', 'LLAVIZQ', 'LLAVDER', 'EQUALS',
+    'EQ' ,'GT', 'LT', 'GE', 'LE'
 ] + list(reserved.values())
 
 # Reglas de expresiones regulares para tokens simples
@@ -25,6 +30,11 @@ t_PTCOMA = r';'
 t_LLAVIZQ = r'\{'
 t_LLAVDER = r'\}'
 t_EQUALS = r'='
+t_EQ = r'=='
+t_GT = r'>'
+t_LT = r'<'
+t_GE = r'>='
+t_LE = r'<='
 
 # Regla para identificadores y palabras reservadas
 def t_ID(t):
