@@ -5,14 +5,20 @@ reserved = {
     'else': 'ELSE',
     'while': 'WHILE',
     'for': 'FOR',
-    'print': 'PRINT'
+    'print': 'PRINT',
+    'append': 'APPEND'
 }
 
 tokens = [
     'NUMBER', 'ID', 'EQUALS', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE',
     'LPAREN', 'RPAREN', 'LBRACE', 'RBRACE', 'LESS', 'GREATER',
-    'AND', 'OR', 'NOT', 'SEMICOLON', 'COMMA', 'STRING'
+    'AND', 'OR', 'NOT', 'SEMICOLON', 'COMMA', 'STRING','LSQUARE', 'RSQUARE',
+    'PERIOD'
 ] + list(reserved.values())
+
+t_PERIOD = r'\.'
+t_LSQUARE    = r'\['
+t_RSQUARE    = r'\]'
 
 t_PLUS       = r'\+'
 t_MINUS      = r'-'

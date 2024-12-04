@@ -4,6 +4,16 @@ codigo = '''
 
 print("------------------------------------");
 
+arr = [1, 2, 3, 4];
+print(arr);
+
+lista = {};
+lista.append(1);
+lista.append(2);
+print(lista);
+
+print("------------------------------------");
+
 x = 10;
 y = 0;
 
@@ -14,9 +24,9 @@ print(mensaje);
 print("------------------------------------");
 
 if (x > 5) {
-    print("La condición del IF se cumplió. x es mayor que 5");
+    print("La condicion del IF se cumplio. x es mayor que 5");
 } else {
-    print("La condición del ELSE se cumplió. x no es mayor que 5");
+    print("La condicion del ELSE se cumplio. x no es mayor que 5");
 }
 
 print("------------------------------------");

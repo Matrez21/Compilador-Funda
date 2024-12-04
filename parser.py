@@ -13,6 +13,29 @@ precedence = (
     ('right', 'NOT'),
 )
 
+class Array:
+    def __init__(self, elements):
+        self.elements = elements
+
+    def evaluate(self):
+        return [e.evaluate() for e in self.elements]
+
+    def __repr__(self):
+        return str([e.evaluate() for e in self.elements])
+
+class LinkedList:
+    def __init__(self):
+        self.items = []
+
+    def append(self, value):
+        self.items.append(value)
+
+    def evaluate(self):
+        return self.items
+    
+    def __repr__(self):
+        return str(self.items)
+
 class Number:
     def __init__(self, value):
         self.value = value
@@ -60,6 +83,8 @@ class NotOp:
     def evaluate(self):
         return not self.expression.evaluate()
 
+
+
 class Assign:
     def __init__(self, name, expression):
         self.name = name
@@ -67,8 +92,18 @@ class Assign:
 
     def execute(self):
         value = self.expression.evaluate()
-        print(f'"{self.name}" se le asigna el valor "{value}"')
+
+        if isinstance(self.expression, Array):
+            print(f"'{self.name}' detectado como Array.")
+        elif isinstance(value, list):
+            value = LinkedList()
+            print(f"'{self.name}' convertido a LinkedList.")
+        else:
+            (f'"{self.name}" se le asigna el valor "{value}"')
+
         variables[self.name] = value
+
+
 
 class Print:
     def __init__(self, expressions):
@@ -126,6 +161,20 @@ class Block:
         for stmt in self.statements:
             stmt.execute()
 
+class Append:
+    def __init__(self, lista_name, value):
+        self.lista_name = lista_name
+        self.value = value
+
+    def execute(self):
+        lista = variables.get(self.lista_name)
+        print(f"Depuracion: '{self.lista_name}'")
+        if isinstance(lista, LinkedList):
+            lista.append(self.value.evaluate())
+            print(f"'{self.lista_name}' despues de append: {lista.items}")
+        else:
+            print(f"Error: '{self.lista_name}' no es una lista.")
+
 def p_program(p):
     'program : statement_list'
     p[0] = Block(p[1])
@@ -145,12 +194,17 @@ def p_statement(p):
                  | statement_if
                  | statement_while
                  | statement_for
+                 | statement_append
                  | block'''
     p[0] = p[1]
 
 def p_statement_print(p):
     'statement_print : PRINT LPAREN expression_list RPAREN SEMICOLON'
     p[0] = Print(p[3])
+
+def p_statement_append(p):
+    'statement_append : ID PERIOD APPEND LPAREN expression RPAREN SEMICOLON'
+    p[0] = Append(p[1], p[5])
 
 def p_expression_list(p):
     '''expression_list : expression_list COMMA expression
@@ -160,6 +214,15 @@ def p_expression_list(p):
         p[0] = p[1]
     else:
         p[0] = [p[1]]
+
+def p_expression_array(p):
+    'expression : LSQUARE expression_list RSQUARE'
+    p[0] = Array(p[2])
+
+def p_expression_list_init(p):
+    'expression : LBRACE RBRACE'
+    p[0] = LinkedList()
+
 
 def p_statement_assign(p):
     'statement_assign : ID EQUALS expression SEMICOLON'
@@ -236,12 +299,12 @@ def p_expression_id(p):
 
 def p_error(p):
     if p:
-        print(f"Error de sintaxis en el token '{p.value}' (tipo {p.type}) en la línea {p.lineno}")
+        print(f"Error de sintaxis en el token '{p.value}' (tipo {p.type}) en la linea {p.lineno}")
         parser.errok()
     else:
         print("Error de sintaxis: Fin inesperado del archivo.")
 
-parser = yacc.yacc(start='program')
+parser = yacc.yacc(start='program', debug=True)
 
 def ejecutar_codigo(codigo):
     resultado = parser.parse(codigo)
