@@ -13,6 +13,61 @@ precedence = (
     ('right', 'NOT'),
 )
 
+class Function:
+    def __init__(self, params, body):
+        self.params = params
+        self.body = body
+
+    def evaluate(self, args):
+        if len(args) != len(self.params):
+            raise ValueError("Numero incorrecto de argumentos.")
+        local_variables = dict(zip(self.params, [arg.evaluate() for arg in args]))
+        for stmt in self.body:
+            if isinstance(stmt, Return):
+                return stmt.evaluate(local_variables)
+            stmt.execute(local_variables)
+
+class FunctionCall:
+    def __init__(self, name, args):
+        self.name = name
+        self.args = args
+
+    def evaluate(self):
+        func = variables.get(self.name)
+        if not isinstance(func, Function):
+            raise ValueError(f"{self.name} no es una funcion.")
+        return func.evaluate(self.args)
+
+class Return:
+    def __init__(self, expression):
+        self.expression = expression
+
+    def evaluate(self, local_variables=None):
+        return self.expression.evaluate(local_variables)
+
+def p_function_definition(p):
+    'statement : FUNC ID LPAREN param_list RPAREN block'
+    p[0] = Assign(p[2], Function(p[4], p[6].statements))
+
+def p_function_call(p):
+    'expression : ID LPAREN expression_list RPAREN'
+    p[0] = FunctionCall(p[1], p[3])
+
+def p_return_statement(p):
+    'statement : RETURN expression SEMICOLON'
+    p[0] = Return(p[2])
+
+def p_param_list(p):
+    '''param_list : param_list COMMA ID
+                  | ID
+                  | empty'''
+    if len(p) == 2 and p[1] is not None:
+        p[0] = [p[1]]
+    elif len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    else:
+        p[0] = []
+
 class Array:
     def __init__(self, elements):
         self.elements = elements
@@ -40,21 +95,23 @@ class Number:
     def __init__(self, value):
         self.value = value
 
-    def evaluate(self):
+    def evaluate(self, local_variables=None):
         return self.value
 
 class String:
     def __init__(self, value):
         self.value = value
 
-    def evaluate(self):
+    def evaluate(self, local_variables=None):
         return self.value
 
 class Variable:
     def __init__(self, name):
         self.name = name
 
-    def evaluate(self):
+    def evaluate(self, local_variables=None):
+        if local_variables and self.name in local_variables:
+            return local_variables[self.name]
         return variables.get(self.name, 0)
 
 class BinOp:
@@ -63,9 +120,9 @@ class BinOp:
         self.op = op
         self.right = right
 
-    def evaluate(self):
-        left_val = self.left.evaluate()
-        right_val = self.right.evaluate()
+    def evaluate(self, local_variables=None):
+        left_val = self.left.evaluate(local_variables)
+        right_val = self.right.evaluate(local_variables)
         
         if self.op == '+': return left_val + right_val
         if self.op == '-': return left_val - right_val
@@ -83,14 +140,17 @@ class NotOp:
     def evaluate(self):
         return not self.expression.evaluate()
 
-
-
 class Assign:
     def __init__(self, name, expression):
         self.name = name
         self.expression = expression
 
     def execute(self):
+        if isinstance(self.expression, Function):
+            variables[self.name] = self.expression
+            print(f"Funcion '{self.name}' definida.")
+            return
+
         value = self.expression.evaluate()
 
         if isinstance(self.expression, Array):
@@ -99,10 +159,9 @@ class Assign:
             value = LinkedList()
             print(f"'{self.name}' convertido a LinkedList.")
         else:
-            (f'"{self.name}" se le asigna el valor "{value}"')
+            print(f'"{self.name}" se le asigna el valor "{value}"')
 
         variables[self.name] = value
-
 
 
 class Print:
@@ -189,7 +248,9 @@ def p_statement_list(p):
         p[0] = [p[1]]
 
 def p_statement(p):
-    '''statement : statement_print
+    '''statement : statement_function
+                 | statement_return
+                 | statement_print
                  | statement_assign
                  | statement_if
                  | statement_while
@@ -197,6 +258,15 @@ def p_statement(p):
                  | statement_append
                  | block'''
     p[0] = p[1]
+
+def p_statement_function(p):
+    'statement_function : FUNC ID LPAREN param_list RPAREN block'
+    p[0] = Assign(p[2], Function(p[4], p[6].statements))
+
+def p_statement_return(p):
+    'statement_return : RETURN expression SEMICOLON'
+    p[0] = Return(p[2])
+
 
 def p_statement_print(p):
     'statement_print : PRINT LPAREN expression_list RPAREN SEMICOLON'

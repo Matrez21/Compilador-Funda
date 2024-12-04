@@ -6,7 +6,9 @@ reserved = {
     'while': 'WHILE',
     'for': 'FOR',
     'print': 'PRINT',
-    'append': 'APPEND'
+    'append': 'APPEND',
+    'func': 'FUNC',
+    'return': 'RETURN' 
 }
 
 tokens = [
