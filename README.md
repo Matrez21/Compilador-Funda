@@ -1,7 +1,7 @@
 # Compilador-Funda
  
 Ejecucion de codigos de prueba:
-python main.py <aqui va el nombre del archivo con el codigo a ejecutar>.txt
+python main.py "aqui va el nombre del archivo con el codigo a ejecutar".txt
 python main.py bucles.txt
 python main.py condicionales.txt
 python main.py errores.txt
