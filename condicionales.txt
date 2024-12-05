@@ -1,5 +1,5 @@
-si (3 < 5) {
-    imprimir("3 es menor que 5");
+si (-9 < 5) {
+    imprimir("-9 es menor que 5");
 } sino {
     imprimir("Esto no deberia ejecutarse");
 }

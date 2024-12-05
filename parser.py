@@ -12,6 +12,7 @@ precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE'),
     ('right', 'NOT'),
+    ('right', 'UMINUS'),
 )
 
 class Function:
@@ -339,6 +340,9 @@ def p_expression_list_init(p):
     'expression : LBRACE RBRACE'
     p[0] = LinkedList()
 
+def p_expression_unary(p):
+    '''expression : MINUS expression %prec UMINUS'''
+    p[0] = Number(-p[2].evaluate())  # Aplica el signo negativo
 
 def p_statement_assign(p):
     'statement_assign : ID EQUALS expression SEMICOLON'

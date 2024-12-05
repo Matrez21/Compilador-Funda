@@ -1,11 +1,11 @@
 para (i = 0; i < 3; i = i + 1) {
     imprimir(i);
 }
-
+x = 8;
 mientras (x > 0) {
     imprimir("x es:", x);
     x = x - 1;
-    si (x = 5) {
+    si (x == 5) {
         romper;
     }
 }
