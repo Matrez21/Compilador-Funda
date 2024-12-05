@@ -1,5 +1,0 @@
-y = 0;
-while (y < 2) {
-    imprimir "Valor de y en el bucle:", y;
-    y = y + 1;
-}

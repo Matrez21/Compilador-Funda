@@ -1,0 +1,5 @@
+imprimir("Falta cerrar la cadena);
+x = 10;
+si x == 10 {
+    imprimir(x);
+}

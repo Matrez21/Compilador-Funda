@@ -1,0 +1,4 @@
+miLista = {};
+miLista.agregar(5);
+miLista.agregar(10);
+imprimir(miLista);

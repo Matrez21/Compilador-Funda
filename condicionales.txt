@@ -1,0 +1,12 @@
+si (3 < 5) {
+    imprimir("3 es menor que 5");
+} sino {
+    imprimir("Esto no deberia ejecutarse");
+}
+
+
+si (5 == 5) {
+    imprimir("Cinco es igual a cinco");
+} sino {
+    imprimir("Esto no deberia mostrarse");
+}

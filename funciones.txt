@@ -1,0 +1,7 @@
+funcion sumar(a, b) {
+    retornar a + b;
+}
+
+imprimir(sumar(3, 5));
+
+
