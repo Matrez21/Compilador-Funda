@@ -1,5 +1,6 @@
 import ply.yacc as yacc
 from lexer_rules import tokens
+from error_handler import reportar_error
 
 variables = {}
 
@@ -11,6 +12,7 @@ precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE'),
     ('right', 'NOT'),
+    ('right', 'UMINUS'),
 )
 
 class Function:
@@ -19,13 +21,23 @@ class Function:
         self.body = body
 
     def evaluate(self, args):
+        # Verificar que el número de argumentos coincida
         if len(args) != len(self.params):
-            raise ValueError("Numero incorrecto de argumentos.")
+            reportar_error(f"Error de función: Número incorrecto de argumentos para la función (esperado {len(self.params)}, dado {len(args)})")
+            return
+
+        # Crear un contexto local con los valores de los argumentos evaluados
         local_variables = dict(zip(self.params, [arg.evaluate() for arg in args]))
+
+        # Ejecutar las instrucciones de la función
         for stmt in self.body:
             if isinstance(stmt, Return):
                 return stmt.evaluate(local_variables)
             stmt.execute(local_variables)
+
+        # Si no hay retorno explícito, devolver None
+        return None
+
 
 class FunctionCall:
     def __init__(self, name, args):
@@ -35,7 +47,8 @@ class FunctionCall:
     def evaluate(self):
         func = variables.get(self.name)
         if not isinstance(func, Function):
-            raise ValueError(f"{self.name} no es una funcion.")
+            reportar_error(f"{self.name} no es una funcion.")
+            return
         return func.evaluate(self.args)
 
 class Return:
@@ -123,6 +136,11 @@ class BinOp:
     def evaluate(self, local_variables=None):
         left_val = self.left.evaluate(local_variables)
         right_val = self.right.evaluate(local_variables)
+
+        if type(left_val) != type(right_val):
+            reportar_error(f"Error de tipo: Operación '{self.op}' entre '{type(left_val).__name__}' y '{type(right_val).__name__}' no permitida.")
+            return
+        
         
         if self.op == '+': return left_val + right_val
         if self.op == '-': return left_val - right_val
@@ -130,8 +148,18 @@ class BinOp:
         if self.op == '/': return left_val / right_val
         if self.op == '<': return left_val < right_val
         if self.op == '>': return left_val > right_val
+        if self.op == '==': return left_val == right_val
         if self.op == '&&': return left_val and right_val
         if self.op == '||': return left_val or right_val
+
+
+class BreakStatement:
+    def execute(self):
+        raise BreakException()
+
+class BreakException(Exception):
+    pass
+
 
 class NotOp:
     def __init__(self, expression):
@@ -153,6 +181,12 @@ class Assign:
 
         value = self.expression.evaluate()
 
+        if self.name in variables:
+            existing_type = type(variables[self.name])
+            new_type = type(value)
+            if existing_type != new_type:
+                reportar_error(f"Error de tipo: Variable '{self.name}' definida como '{existing_type.__name__}' no puede ser asignada como '{new_type.__name__}'.")
+                return
         if isinstance(self.expression, Array):
             print(f"'{self.name}' detectado como Array.")
         elif isinstance(value, list):
@@ -192,7 +226,11 @@ class WhileLoop:
     def execute(self):
         print("Iniciando bucle WHILE.")
         while self.condition.evaluate():
-            self.block.execute()
+            try:
+                self.block.execute()
+            except BreakException:
+                print("Bucle WHILE interrumpido con 'romper'.")
+                break
 
 class ForLoop:
     def __init__(self, init_assign, condition, increment_assign, block):
@@ -208,7 +246,11 @@ class ForLoop:
         while True:
             if self.condition and not self.condition.evaluate():
                 break
-            self.block.execute()
+            try:
+                self.block.execute()
+            except BreakException:
+                print("Bucle FOR interrumpido con 'romper'.")
+                break
             if self.increment_assign:
                 self.increment_assign.execute()
 
@@ -276,6 +318,11 @@ def p_statement_append(p):
     'statement_append : ID PERIOD APPEND LPAREN expression RPAREN SEMICOLON'
     p[0] = Append(p[1], p[5])
 
+def p_statement_break(p):
+    'statement : BREAK SEMICOLON'
+    p[0] = BreakStatement()
+
+
 def p_expression_list(p):
     '''expression_list : expression_list COMMA expression
                        | expression'''
@@ -293,6 +340,9 @@ def p_expression_list_init(p):
     'expression : LBRACE RBRACE'
     p[0] = LinkedList()
 
+def p_expression_unary(p):
+    '''expression : MINUS expression %prec UMINUS'''
+    p[0] = Number(-p[2].evaluate())  # Aplica el signo negativo
 
 def p_statement_assign(p):
     'statement_assign : ID EQUALS expression SEMICOLON'
@@ -343,6 +393,7 @@ def p_expression_binop(p):
                   | expression DIVIDE expression
                   | expression LESS expression
                   | expression GREATER expression
+                  | expression EQUALS_EQUALS expression
                   | expression AND expression
                   | expression OR expression'''
     p[0] = BinOp(p[1], p[2], p[3])
@@ -369,10 +420,23 @@ def p_expression_id(p):
 
 def p_error(p):
     if p:
-        print(f"Error de sintaxis en el token '{p.value}' (tipo {p.type}) en la linea {p.lineno}")
-        parser.errok()
+        if p.type == 'STRING' and not p.value.endswith('"'):
+            reportar_error(f"Error de sintaxis: Falta cerrar las comillas de la cadena en la línea {p.lineno}")
+        elif p.type == 'SEMICOLON':
+            reportar_error(f"Error de sintaxis: Falta ';' en la línea {p.lineno}")
+        elif p.type == 'LPAREN':
+            reportar_error(f"Error de sintaxis: Falta un paréntesis ')' para cerrar en la línea {p.lineno}")
+        elif p.type == 'LBRACE':
+            reportar_error(f"Error de sintaxis: Falta un '}}' para cerrar el bloque en la línea {p.lineno}")
+        elif p.type == 'COMMA':
+            reportar_error(f"Error de sintaxis: Falta un argumento después de ',' en la línea {p.lineno}")
+        elif p.type == 'ID':
+            reportar_error(f"Error de sintaxis: Falta un separador (',' o ';') antes de '{p.value}' en la línea {p.lineno}")
+        else:
+            reportar_error(f"Error de sintaxis: Token inesperado '{p.value}' en la línea {p.lineno}")
     else:
-        print("Error de sintaxis: Fin inesperado del archivo.")
+        reportar_error("Error de sintaxis: Fin inesperado del archivo.")
+
 
 parser = yacc.yacc(start='program', debug=True)
 
